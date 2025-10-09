@@ -1,108 +1,107 @@
+# -------------------------------------------------------------------------------------
+# Required variables
+# -------------------------------------------------------------------------------------
+
 variable "project_id" {
-  description = "GCP project ID"
-  default     = null
+  type        = string
+  description = "GCP Project ID for the deployment."
 }
 
-variable "prefix" {
-  description = "Arbitrary string used to prefix resource names."
+variable "region" {
   type        = string
-  default     = null
-}
-
-variable "region1" {
-  description = "Google Cloud region1 for the created resources."
-  type        = string
-  default     = null
-}
-
-variable "region2" {
-  description = "Google Cloud region1 for the created resources."
-  type        = string
-  default     = null
+  description = "GCP region for the deployment."
 }
 
 variable "public_key_path" {
-  description = "Local path to public SSH key.  If you do not have a public key, run >> ssh-keygen -f ~/.ssh/demo-key -t rsa -C admin"
   type        = string
+  description = "Local path to public SSH key. To generate the key pair use `ssh-keygen -t rsa -C admin -N '' -f id_rsa`  If you do not have a public key, run `ssh-keygen -f ~/.ssh/demo-key -t rsa -C admin`"
+}
+
+variable "vmseries_mgmt_ips" {
+  type        = list(string)
+  description = "A list of IP addresses to be added to the management network's ingress firewall rule. The IP addresses will be able to access to the VM-Series management interface."
+}
+
+variable "configure_ncc" {
+  type        = bool
+  description = "If set to true, ncc.tf will be executed and the NCC hub, groups, and spokes will be created automatically."
+}
+
+
+# -------------------------------------------------------------------------------------
+# Optional variables
+# ------------------------------------------------------------------------------------
+variable "prefix" {
+  type        = string
+  description = "Prefix to add to GCP resource names, an arbitrary string"
   default     = null
+}
+
+variable "cidr_mgmt" {
+  type        = string
+  description = "The CIDR range of the management subnetwork."
+  default     = "10.0.0.0/24"
+}
+
+variable "cidr_untrust" {
+  type        = string
+  description = "The CIDR range of the untrust subnetwork."
+  default     = "10.0.1.0/24"
+}
+
+variable "cidr_trust" {
+  type        = string
+  description = "The CIDR range of the trust subnetwork."
+  default     = "10.0.2.0/24"
+}
+
+variable "cidr_spoke1" {
+  type        = string
+  description = "The CIDR range of the spoke1 subnetwork."
+  default     = "10.1.0.0/24"
+}
+
+variable "cidr_spoke2" {
+  type        = string
+  description = "The CIDR range of the spoke2 subnetwork."
+  default     = "10.2.0.0/24"
 }
 
 variable "vmseries_image" {
-  description = "The image name from which to boot an instance, including the license type and the version, e.g. vmseries-byol-814, vmseries-bundle1-814, vmseries-flex-bundle2-1001. Default is vmseries-flex-bundle1-913."
   type        = string
-  default     = "https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/images/vmseries-flex-bundle2-1112h3"
-
+  description = "Name of the VM-Series image within the paloaltonetworksgcp-public project.  To list available images, run: `gcloud compute images list --project paloaltonetworksgcp-public --no-standard-images`. If you are using a custom image in a different project, please update `local.vmseries_iamge_url` in `main.tf`."
+  default     = "vmseries-flex-bundle2-1022h2"
 }
 
 variable "vmseries_machine_type" {
-  description = "The machine type for the VM-Series instance."
   type        = string
+  description = "The machine shape for the VM-Series instance (N2 and E2 instances are supported)."
   default     = "n2-standard-4"
 }
 
-variable "mgmt_allow_ips" {
-  description = "A list of IP addresses to be added to the management network's ingress firewall rule. The IP addresses will be able to access to the VM-Series management interface."
-  type        = list(string)
-  default     = null
-}
-
-
-
-
-variable "region1_cidr_mgmt" {
-  description = "The CIDR range of the management subnetwork in region1."
+variable "vmseries_scale_max" {
   type        = string
-  default     = null
+  description = "The maximum number of firewalls to scale up to during scaling event."
+  default     = 1
 }
 
-variable "region1_cidr_untrust" {
-  description = "The CIDR range of the untrust subnetwork in region1."
+variable "vmseries_scale_min" {
   type        = string
-  default     = null
+  description = "The minimum number of firewalls to scale up to during scaling event."
+  default     = 1
 }
 
-variable "region1_cidr_vpc1" {
-  description = "The CIDR range of the vpc1 subnetwork in region1."
-  type        = string
-  default     = null
-}
-
-variable "region1_cidr_vpc2" {
-  description = "The CIDR range of the vpc2 subnetwork in region1."
-  type        = string
-  default     = null
-}
-
-
-variable "region2_cidr_mgmt" {
-  description = "The CIDR range of the management subnetwork in region2."
-  type        = string
-  default     = null
-}
-
-variable "region2_cidr_untrust" {
-  description = "The CIDR range of the untrust subnetwork in region2."
-  type        = string
-  default     = null
-}
-
-variable "region2_cidr_vpc1" {
-  description = "The CIDR range of the vpc1 subnetwork in region2."
-  type        = string
-  default     = null
-}
-
-variable "region2_cidr_vpc2" {
-  description = "The CIDR range of the vpc2 subnetwork in region2."
-  type        = string
-  default     = null
-}
-
-
-
-
-variable "create_workload_vms" {
-  description = "Set to true to create a workload VM for testing purposes."
-  default     = true
+variable "vmseries_roles" {
+  type        = set(string)
+  description = "Roles to assign to the firewall's service account."
+  default = [
+    "roles/compute.networkViewer",
+    "roles/logging.logWriter",
+    "roles/monitoring.metricWriter",
+    "roles/monitoring.viewer",
+    "roles/viewer",
+    "roles/stackdriver.accounts.viewer",
+    "roles/stackdriver.resourceMetadata.writer",
+  ]
 }
 
