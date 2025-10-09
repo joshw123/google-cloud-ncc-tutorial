@@ -22,7 +22,7 @@ The star topology uses two spoke groups with separate route tables to enforce se
 
 The VM-Series `trust-vpc` belongs to the **center group**, while the protected networks, `spoke1-vpc` and `spoke2-vpc` belong to the **edge group**. All ingress and egress traffic from edge networks is routed through the center group, where it is inspected by the VM-Series firewall.
 
-<img src="images/diagram.png">
+<img src="images/diagram_main.png">
 
 For more information please see [Network Connectivity Center Star Topology](https://cloud.google.com/network-connectivity/docs/network-connectivity-center/concepts/connectivity-topologies#star-topology).
 
